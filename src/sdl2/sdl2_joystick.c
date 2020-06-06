@@ -286,11 +286,6 @@ void SDL2_INPUT_WriteConfig(FILE *fp)
 	write_real_js_configs(fp);
 }
 
-static void SwapJoysticks(void)
-{
-	swap_joysticks = 1 - swap_joysticks;
-}
-
 static int get_SDL_joystick_state(SDL_Joystick *joystick)
 {
 	int x;

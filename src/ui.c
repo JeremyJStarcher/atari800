@@ -3499,7 +3499,7 @@ static void WindowsOptions(void)
 
 #ifndef USE_CURSES
 
-#ifdef GUI_SDL
+#if defined GUI_SDL || defined GUI_SDL2
 static char joys[2][5][16];
 static const UI_tMenuItem joy0_menu_array[] = {
 	UI_MENU_LABEL("Select joy direction"),
@@ -3592,101 +3592,6 @@ static void RealJoystickConfiguration(void)
 	}
 }
 #endif
-
-#ifdef GUI_SDL2
-static char joys[2][5][16];
-static const UI_tMenuItem joy0_menu_array[] = {
-	UI_MENU_LABEL("Select joy direction"),
-	UI_MENU_LABEL("\022\022\022\022\022\022\022\022\022\022\022\022\022\022\022\022\022\022\022\022"),
-	UI_MENU_SUBMENU_SUFFIX(0, "Left   : ", joys[0][0]),
-	UI_MENU_SUBMENU_SUFFIX(1, "Up     : ", joys[0][1]),
-	UI_MENU_SUBMENU_SUFFIX(2, "Right  : ", joys[0][2]),
-	UI_MENU_SUBMENU_SUFFIX(3, "Down   : ", joys[0][3]),
-	UI_MENU_SUBMENU_SUFFIX(4, "Trigger: ", joys[0][4]),
-	UI_MENU_END
-};
-static const UI_tMenuItem joy1_menu_array[] = {
-	UI_MENU_LABEL("Select joy direction"),
-	UI_MENU_LABEL("\022\022\022\022\022\022\022\022\022\022\022\022\022\022\022\022\022\022\022\022"),
-	UI_MENU_SUBMENU_SUFFIX(0, "Left   : ", joys[1][0]),
-	UI_MENU_SUBMENU_SUFFIX(1, "Up     : ", joys[1][1]),
-	UI_MENU_SUBMENU_SUFFIX(2, "Right  : ", joys[1][2]),
-	UI_MENU_SUBMENU_SUFFIX(3, "Down   : ", joys[1][3]),
-	UI_MENU_SUBMENU_SUFFIX(4, "Trigger: ", joys[1][4]),
-	UI_MENU_END
-};
-
-static void KeyboardJoystickConfiguration(int joystick)
-{
-	char title[40];
-	int option2 = 0;
-	snprintf(title, sizeof(title), "Define keys for joystick %d", joystick);
-	for(;;) {
-		int j0d;
-		for(j0d = 0; j0d <= 4; j0d++)
-			PLATFORM_GetJoystickKeyName(joystick, j0d, joys[joystick][j0d], sizeof(joys[joystick][j0d]));
-		option2 = UI_driver->fSelect(title, UI_SELECT_POPUP, option2, joystick == 0 ? joy0_menu_array : joy1_menu_array, NULL);
-		if (option2 >= 0 && option2 <= 4) {
-			PLATFORM_SetJoystickKey(joystick, option2, GetRawKey());
-		}
-		if (option2 < 0) break;
-		if (++option2 > 4) option2 = 0;
-	}
-}
-
-static void RealJoystickConfiguration(void)
-{
-	char title[40];
-	int option = 0;
-	int i;
-	SDL_INPUT_RealJSConfig_t *js_config;
-
-	static UI_tMenuItem real_js_menu_array[] = {
-		UI_MENU_LABEL("Joystick 1"),
-		UI_MENU_CHECK(0, "Use hat/D-PAD:"),
-		UI_MENU_LABEL("Joystick 2"),
-		UI_MENU_CHECK(1, "Use hat/D-PAD:"),
-		UI_MENU_LABEL("Joystick 3"),
-		UI_MENU_CHECK(2, "Use hat/D-PAD:"),
-		UI_MENU_LABEL("Joystick 4"),
-		UI_MENU_CHECK(3, "Use hat/D-PAD:"),
-		UI_MENU_END
-	};
-
-	snprintf(title, sizeof (title), "Configuration of Real Joysticks");
-
-	for (;;) {
-		/*Set the CHECK items*/
-		for (i = 0; i < 4; i++) {
-			SetItemChecked(real_js_menu_array, i, SDL_INPUT_GetRealJSConfig(i)->use_hat);
-		}
-
-		option = UI_driver->fSelect(title, 0, option, real_js_menu_array, NULL);
-
-		if (option < 0) break;
-
-		switch (option) {
-			case 0:
-				js_config = SDL_INPUT_GetRealJSConfig(0);
-				js_config->use_hat = !js_config->use_hat;
-				break;
-			case 1:
-				js_config = SDL_INPUT_GetRealJSConfig(1);
-				js_config->use_hat = !js_config->use_hat;
-				break;
-			case 2:
-				js_config = SDL_INPUT_GetRealJSConfig(2);
-				js_config->use_hat = !js_config->use_hat;
-				break;
-			case 3:
-				js_config = SDL_INPUT_GetRealJSConfig(3);
-				js_config->use_hat = !js_config->use_hat;
-				break;
-		}
-	}
-}
-#endif
-
 
 #ifdef DIRECTX
 static char buttons[9][2][16];
@@ -3787,14 +3692,7 @@ static void ControllerConfiguration(void)
 		UI_MENU_SUBMENU_SUFFIX(3, "Mouse port:", mouse_port_status),
 		UI_MENU_SUBMENU_SUFFIX(4, "Mouse speed:", mouse_speed_status),
 #endif
-#ifdef GUI_SDL
-		UI_MENU_CHECK(5, "Enable keyboard joystick 1:"),
-		UI_MENU_SUBMENU(6, "Define layout of keyboard joystick 1"),
-		UI_MENU_CHECK(7, "Enable keyboard joystick 2:"),
-		UI_MENU_SUBMENU(8, "Define layout of keyboard joystick 2"),
-		UI_MENU_SUBMENU(9, "Configure real joysticks"),
-#endif
-#ifdef GUI_SDL2
+#if defined GUI_SDL || defined GUI_SDL2
 		UI_MENU_CHECK(5, "Enable keyboard joystick 1:"),
 		UI_MENU_SUBMENU(6, "Define layout of keyboard joystick 1"),
 		UI_MENU_CHECK(7, "Enable keyboard joystick 2:"),
@@ -3834,11 +3732,7 @@ static void ControllerConfiguration(void)
 		mouse_port_status[0] = (char) ('1' + INPUT_mouse_port);
 		mouse_speed_status[0] = (char) ('0' + INPUT_mouse_speed);
 #endif
-#ifdef GUI_SDL
-		SetItemChecked(menu_array, 5, PLATFORM_kbd_joy_0_enabled);
-		SetItemChecked(menu_array, 7, PLATFORM_kbd_joy_1_enabled);
-#endif
-#ifdef GUI_SDL2
+#if defined GUI_SDL || defined GUI_SDL2
 		SetItemChecked(menu_array, 5, PLATFORM_kbd_joy_0_enabled);
 		SetItemChecked(menu_array, 7, PLATFORM_kbd_joy_1_enabled);
 #endif
@@ -3893,23 +3787,7 @@ static void ControllerConfiguration(void)
 			INPUT_mouse_speed = UI_driver->fSelectInt(INPUT_mouse_speed, 1, 9);
 			break;
 #endif
-#ifdef GUI_SDL
-		case 5:
-			PLATFORM_kbd_joy_0_enabled = !PLATFORM_kbd_joy_0_enabled;
-			break;
-		case 6:
-			KeyboardJoystickConfiguration(0);
-			break;
-		case 7:
-			PLATFORM_kbd_joy_1_enabled = !PLATFORM_kbd_joy_1_enabled;
-			break;
-		case 8:
-			KeyboardJoystickConfiguration(1);
-			break;
-		case 9: RealJoystickConfiguration();
-			break;
-#endif
-#ifdef GUI_SDL2
+#if defined GUI_SDL || defined GUI_SDL2
 		case 5:
 			PLATFORM_kbd_joy_0_enabled = !PLATFORM_kbd_joy_0_enabled;
 			break;

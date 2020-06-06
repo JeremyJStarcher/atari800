@@ -125,11 +125,6 @@ void PLATFORM_ConfigSave(FILE *fp)
 	SDL2_INPUT_WriteConfig(fp);
 }
 
-double PLATFORM_Time(void)
-{
-	return SDL_GetTicks() * 1e-3;
-}
-
 int SDL2_VIDEO_Initialise(int *argc, char *argv[])
 {
 	if (SDL_Init(SDL_INIT_VIDEO
