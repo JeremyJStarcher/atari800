@@ -102,7 +102,7 @@ if WITH_SOUND_SDL
 atari800_SOURCES += sound.c sound.h sdl/sound.c
 endif
 if WITH_SOUND_SDL2
-atari800_SOURCES += sound.c sound.h sdl2/sound.c
+atari800_SOURCES += sound.c sound.h sdl/sound.c
 endif
 if WITH_SOUND_FALCON
 atari800_SOURCES += sound.c falcon/sound.c
