@@ -512,3 +512,10 @@ int main(int argc, char **argv)
 	Atari800_ErrExit();
 	return 0;
 }
+
+double PLATFORM_Time(void)
+{
+	return SDL_GetTicks() * 1e-3;
+}
+
+
