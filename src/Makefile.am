@@ -91,6 +91,11 @@ atari800_SOURCES += win32/SDL_win32_main.c
 endif
 endif
 
+if A8_USE_SDL2
+atari800_SOURCES += sdl/init.c sdl/init.h
+endif
+
+
 if WITH_SOUND
 atari800_SOURCES += \
 	pokeysnd.c pokeysnd.h \
@@ -175,12 +180,16 @@ atari800_SOURCES += \
 	sdl/video.c sdl/video.h \
 	sdl/video_sw.c sdl/video_sw.h \
 	sdl/input.c sdl/input.h \
+	sdl/input_common.c sdl/input_common.h \
 	sdl/palette.c sdl/palette.h
 atari800_SOURCES += pbi_proto80.c pbi_proto80.h af80.c af80.h bit3.c bit3.h
 endif
 
 if WITH_VIDEO_SDL2
-atari800_SOURCES += sdl2/main.c sdl2/sdl2_input.h sdl2/sdl2_input.c sdl2/sdl2_joystick.h sdl2/sdl2_joystick.c
+atari800_SOURCES += sdl/main.c  \
+	sdl/input_common.c sdl/input_common.h \
+    sdl/video_sdl2.c \
+    sdl/input_sdl2.c
 endif
 
 if WITH_VIDEO_DOSVGA

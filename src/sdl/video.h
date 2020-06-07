@@ -7,6 +7,20 @@
 #include "config.h"
 #include "videomode.h"
 
+/* Initialise the SDL video subsystem. */
+void SDL_VIDEO_InitSDL(void);
+/* Close the SDL video subsystem. */
+void SDL_VIDEO_QuitSDL(void);
+/* Close and restart the SDL video subsystem. */
+void SDL_VIDEO_ReinitSDL(void);
+
+int SDL_VIDEO_ReadConfig(char *option, char *parameters);
+void SDL_VIDEO_WriteConfig(FILE *fp);
+int SDL_VIDEO_Initialise(int *argc, char *argv[]);
+void SDL_VIDEO_Exit(void);
+
+#ifdef SDL
+
 /* Native BPP of the desktop. OpenGL modes can be opened only
    in the native BPP. */
 extern int SDL_VIDEO_native_bpp;
@@ -51,18 +65,6 @@ extern int SDL_VIDEO_interpolate_scanlines;
 void SDL_VIDEO_SetInterpolateScanlines(int value);
 void SDL_VIDEO_ToggleInterpolateScanlines(void);
 
-/* Initialise the SDL video subsystem. */
-void SDL_VIDEO_InitSDL(void);
-/* Close the SDL video subsystem. */
-void SDL_VIDEO_QuitSDL(void);
-/* Close and restart the SDL video subsystem. */
-void SDL_VIDEO_ReinitSDL(void);
-
-int SDL_VIDEO_ReadConfig(char *option, char *parameters);
-void SDL_VIDEO_WriteConfig(FILE *fp);
-int SDL_VIDEO_Initialise(int *argc, char *argv[]);
-void SDL_VIDEO_Exit(void);
-
 /* Write the screen data into DEST. */
 void SDL_VIDEO_BlitNormal8(Uint32 *dest, Uint8 *src, int pitch, int width, int height);
 void SDL_VIDEO_BlitNormal16(Uint32 *dest, Uint8 *src, int pitch, int width, int height, Uint16 *palette16);
@@ -86,5 +88,6 @@ void SDL_VIDEO_BlitBIT3_32(Uint32 *dest, int first_column, int last_column, int 
 
 /* Update lookup tables for the blit functions. */
 void SDL_VIDEO_UpdatePaletteLookup(VIDEOMODE_MODE_t mode, int bpp_32);
+#endif /* SDL */
 
 #endif /* SDL_VIDEO_H_ */

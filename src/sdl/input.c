@@ -38,6 +38,7 @@
 
 #include "config.h"
 #include "sdl/input.h"
+#include "input_common.h"
 #include "akey.h"
 #include "atari.h"
 #include "binload.h"
@@ -67,17 +68,6 @@ static int swap_joysticks = FALSE;
 int PLATFORM_kbd_joy_0_enabled = TRUE;	/* enabled by default, doesn't hurt */
 int PLATFORM_kbd_joy_1_enabled = FALSE;	/* disabled, would steal normal keys */
 
-static int KBD_TRIG_0 = SDLK_RCTRL;
-static int KBD_STICK_0_LEFT = SDLK_KP4;
-static int KBD_STICK_0_RIGHT = SDLK_KP6;
-static int KBD_STICK_0_DOWN = SDLK_KP5;
-static int KBD_STICK_0_UP = SDLK_KP8;
-static int KBD_TRIG_1 = SDLK_LCTRL;
-static int KBD_STICK_1_LEFT = SDLK_a;
-static int KBD_STICK_1_RIGHT = SDLK_d;
-static int KBD_STICK_1_DOWN = SDLK_s;
-static int KBD_STICK_1_UP = SDLK_w;
-
 /* Maping for the START, RESET, OPTION, SELECT and EXIT keys */
 static int KBD_RESET = SDLK_F5;
 static int KBD_OPTION = SDLK_F2;
@@ -89,16 +79,6 @@ static int KBD_EXIT = SDLK_F9;
 
 static int fd_joystick0 = -1;
 static int fd_joystick1 = -1;
-
-#define MAX_JOYSTICKS	4
-static SDL_Joystick *joystick[MAX_JOYSTICKS] = { NULL, NULL, NULL, NULL };
-static int joystick_nbuttons[MAX_JOYSTICKS];
-static SDL_INPUT_RealJSConfig_t real_js_configs[MAX_JOYSTICKS];
-static int joysticks_found = 0;
-static struct js_state {
-	unsigned int port;
-	unsigned int trig;
-} sdl_js_state[MAX_JOYSTICKS];
 
 #define minjoy 10000			/* real joystick tolerancy */
 
@@ -149,31 +129,6 @@ static int SDLKeyBind(int *retval, char *sdlKeySymIntStr)
 	else {
 		return FALSE;
 	}
-}
-
-/*Set real joystick to use hat instead of axis*/
-static int set_real_js_use_hat(int joyIndex, const char* parm)
-{
-    real_js_configs[joyIndex].use_hat = Util_sscandec(parm) != 0 ? TRUE : FALSE;
-    return TRUE;
-}
-
-/*Reset configurations of the real joysticks*/
-static void reset_real_js_configs(void)
-{
-    int i;
-    for (i = 0; i < MAX_JOYSTICKS; i++) {
-        real_js_configs[i].use_hat = FALSE;
-    }
-}
-
-/*Write configurations of real joysticks*/
-static void write_real_js_configs(FILE* fp)
-{
-    int i;
-    for (i = 0; i < MAX_JOYSTICKS; i++) {
-        fprintf(fp, "SDL_JOY_%d_USE_HAT=%d\n", i, real_js_configs[i].use_hat);
-    }
 }
 
 /*Get pointer to a real joystick configuration*/
